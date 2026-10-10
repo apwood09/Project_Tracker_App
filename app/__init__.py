@@ -2,7 +2,7 @@ from flask import Flask, render_template
 
 from config import config
 from .extensions import db
-from app.models import Item
+from app.models import Item, User
 
 
 def create_app(config_name="default"):
