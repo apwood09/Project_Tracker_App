@@ -1,8 +1,10 @@
 from datetime import datetime, timezone
-
 from .extensions import db
+from flask_sqlalchemy import SQLAlchemy 
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
-
+# test class 
 class Item(db.Model):
     """Placeholder model. Rename or replace to suit your domain."""
 
@@ -23,3 +25,24 @@ class Item(db.Model):
 
     def __repr__(self):
         return f"<Item {self.id} {self.name!r}>"
+
+# class User 
+class User(UserMixin, db.Model): 
+    __tablename__ = 'users'
+
+    # columns 
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+
+    # hash passwords safely
+    def set_password(self, password): 
+        self.password_hash = generate_password_hash(password)
+
+    # verify password on login 
+    def check_password(self, password): 
+        return check_password_hash(self.password_hash, password)
+    
+    # visual represenataion -> object for debugging 
+    def __repr__(self): 
+        return f'<User {self.username}'
