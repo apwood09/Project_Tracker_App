@@ -1,7 +1,6 @@
 from flask import Blueprint, jsonify, render_template, request
-
 from .extensions import db
-from .models import Item
+from .models import Item, User
 
 main_bp = Blueprint("main", __name__)
 
@@ -20,33 +19,44 @@ def about():
 def health():
     return jsonify(status="ok")
 
+# Class User: GET 
+@main_bp.route("/api/users", methods=["GET"])
+def list_users(): 
+    users = User.query.order_by(User.created_at.desc()).all()
+    return jsonify([i.to_dict() for i in users]), 200
 
-@main_bp.route("/api/items", methods=["GET"])
-def list_items():
-    items = Item.query.order_by(Item.created_at.desc()).all()
-    return jsonify([i.to_dict() for i in items])
-
-
-@main_bp.route("/api/items", methods=["POST"])
-def create_item():
+# Class User: POST
+@main_bp.route("/api/users", methods=["POST"])
+def create_user(): 
     data = request.get_json(silent=True) or {}
-    name = (data.get("name") or "").strip()
-    if not name:
-        return jsonify(error="'name' is required"), 400
-    item = Item(name=name, description=data.get("description", ""))
-    db.session.add(item)
-    db.session.commit()
-    return jsonify(item.to_dict()), 201
+    username = (data.get("username") or "").strip()
+    password = data.get("password")
 
-@main_bp.route("/api/items/<int:item_id>", methods=["DELETE"])
-def delete_item(item_id): 
-    print (f"---> Delete route hit for item ID: {item_id} <---")
-    item = Item.query.filter_by(id=item_id).first()
+    if not username or not password: 
+        return jsonify(error=("'username' and 'password' are required")), 400
+    
+    # does user already exist? 
+    if User.query.filter_by(username=username).first(): 
+        return jsonify({"error": f"Username '{username} is already stitched"}), 400
 
-    if not item: 
-        return jsonify({"error": f"Item {item_id} not found in database"}), 404
+    # initiate new user 
+    new_user = User(username=username)
+    new_user.set_password(password) #secure password hash 
 
-    db.session.delete(item)
+    db.session.add(new_user)
     db.session.commit()
 
-    return jsonify({"message": f"Item {item_id} deleted succesfully"}), 200
+    return jsonify(new_user.to_dict()), 201
+
+# Class User: DELETE
+@main_bp.route("/api/users/<string:username>", methods=["DELETE"])
+def delete_user(username): 
+    user = User.query.filter_by(username=username).first()
+
+    if not user: 
+        return jsonify({"error": f"user {username} not seemed in database"}), 404
+    
+    db.session.delete(user)
+    db.session.commit()
+
+    return jsonify({"message": f"user {username} succesfully unstitched"}), 200
