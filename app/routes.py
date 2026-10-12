@@ -8,7 +8,7 @@ main_bp = Blueprint("main", __name__)
 
 @main_bp.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", app_name="Yarn Over Stitches")
 
 
 @main_bp.route("/about")
@@ -21,13 +21,13 @@ def health():
     return jsonify(status="ok")
 
 # Class User: GET 
-@main_bp.route("/api/users", methods=["GET"])
+@main_bp.route("/users", methods=["GET"])
 def list_users(): 
     users = User.query.order_by(User.created_at.desc()).all()
     return jsonify([i.to_dict() for i in users]), 200
 
 # Class User: POST
-@main_bp.route("/api/users", methods=["POST"])
+@main_bp.route("/users", methods=["POST"])
 def create_user(): 
     data = request.get_json(silent=True) or {}
     username = (data.get("username") or "").strip()
@@ -50,7 +50,7 @@ def create_user():
     return jsonify(new_user.to_dict()), 201
 
 # Class User: DELETE
-@main_bp.route("/api/users/<string:username>", methods=["DELETE"])
+@main_bp.route("/users/<string:username>", methods=["DELETE"])
 def delete_user(username): 
     user = User.query.filter_by(username=username).first()
 
@@ -64,7 +64,7 @@ def delete_user(username):
 
 # User LOGIN 
 # Login POST
-@main_bp.route("login", methods=["POST"])
+@main_bp.route("/login", methods=["POST"])
 def login(): 
     data = request.get_json(silent=True) or {}
     username = (data.get("username") or "").strip()
@@ -94,6 +94,6 @@ def login():
 @main_bp.route("/logout", methods=["POST"])
 @login_required # restricts endpoint to actively logged_in users ONLY 
 def logout(): 
-    username = current_user,username
+    username = current_user.username
     logout_user() # clears session tokens and cookies completely 
     return jsonify({"message": f"User {username} sucessfully unstitched from session"}), 200
