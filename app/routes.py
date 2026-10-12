@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, render_template, request
 from .extensions import db
-from .models import Item, User
+from .models import User
+from flask_login import login_user, logout_user, login_required, current_user
 
 main_bp = Blueprint("main", __name__)
 
@@ -60,3 +61,39 @@ def delete_user(username):
     db.session.commit()
 
     return jsonify({"message": f"user {username} succesfully unstitched"}), 200
+
+# User LOGIN 
+# Login POST
+@main_bp.route("login", methods=["POST"])
+def login(): 
+    data = request.get_json(silent=True) or {}
+    username = (data.get("username") or "").strip()
+    password = data.get("password")
+
+    # validation check 
+    if not username or not password: 
+        return jsonify({"error": "'username' and 'password' are required"}), 400
+
+    # find user profile 
+    user = User.query.filter_by(username=username).first()
+
+    # verify user exist and check password hashed securely 
+    if not user or not user.check_password(password): 
+        return jsonify({"error": "Invalid username or password stitched"}), 401 
+
+    # establish session cookie context 
+    login_user(user, remember=True)
+
+    return jsonify({
+        "message": f"Welcome back, {user.username}!", 
+        "user": user.to_dict()
+    }), 200
+
+# User LOGOUT 
+# Logout POST 
+@main_bp.route("/logout", methods=["POST"])
+@login_required # restricts endpoint to actively logged_in users ONLY 
+def logout(): 
+    username = current_user,username
+    logout_user() # clears session tokens and cookies completely 
+    return jsonify({"message": f"User {username} sucessfully unstitched from session"}), 200
