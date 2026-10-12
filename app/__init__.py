@@ -1,13 +1,12 @@
 from flask import Flask 
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager 
-
-db = SQLAlchemy()
-login_manager = LoginManager()
+from app.extensions import db, login_manager
 
 def create_app(config_name="default"): 
     app = Flask(__name__)
+    # configuration settings 
     app.config["SECRET_KEY"] = "super-secret-knitting-key" # secure sessions 
+    # db URI 
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 
     # initialize extensions 
     db.init_app(app)
