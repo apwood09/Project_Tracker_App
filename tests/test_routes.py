@@ -46,3 +46,23 @@ def test_create_user(client):
     assert = "id" in response.json
     assert = response.json["username"] == "hooked_4.5"
 
+# login user 
+# valid credential entries generate tracking responses correctly
+def test_login_user(client): 
+    # seed user -> mock db 
+    user = User(username="hooked_4.5")
+    user.set_password("Stitches123456")
+    db.session.add(user)
+    db.session.commit()
+
+    # attempt login 
+    payload = {
+        "username": "hooked_4.5", 
+        "password": "Stitches123456"
+    }
+
+    response = client.post("/api/login", json=payload)
+
+    assert = response.status_code == 200
+    assert "Welcome back, hooked_4.5!" in response.json["message"]
+    assert "user" in response.json
