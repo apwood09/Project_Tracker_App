@@ -66,3 +66,21 @@ def test_login_user(client):
     assert = response.status_code == 200
     assert "Welcome back, hooked_4.5!" in response.json["message"]
     assert "user" in response.json
+
+# logout user
+# full integration sequence logic paths for logout actions 
+def test_logout_user(client): 
+    # seed user -> mock db
+    user = User(username="hooked_4.5")
+    user.set_password("Stitches123456")
+    db.session.add(user)
+    db.session.commit()
+
+    # log in, establish session cookie in test client 
+    client.post("/api/login", json={"username": "hooked_4.5", "password": "Stitches123456"})
+
+    # hit logout endpoint 
+    response = client.post("/api/logout")
+
+    assert response.status_code == 200
+    assert "Successfully unstitched from session" in response.json["message"]
