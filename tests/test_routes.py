@@ -1,14 +1,15 @@
 import pytest 
 from app  import create_app, db
+from app.models import User
 
 @pytest.fixture
-def clinet(): 
+def client(): 
     # isolated, clean in-memory db configuration for each test function
     app = create_app("testing")
     app.config.update({
         "TESTING": True, 
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory". 
-        "WTF_CRSF_ENABLED": False # disables from secruity: JSON API testing
+        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory", 
+        "WTF_CSRF_ENABLED": False # disables from secruity: JSON API testing
     })
 
     with app.test_client() as client: 
@@ -42,9 +43,9 @@ def test_create_user(client):
 
     response = client.post("/api/users", json=payload)
 
-    assert = response.status_code == 201
-    assert = "id" in response.json
-    assert = response.json["username"] == "hooked_4.5"
+    assert  response.status_code == 201
+    assert  "id" in response.json
+    assert  response.json["username"] == "hooked_4.5"
 
 # login user 
 # valid credential entries generate tracking responses correctly
@@ -63,7 +64,7 @@ def test_login_user(client):
 
     response = client.post("/api/login", json=payload)
 
-    assert = response.status_code == 200
+    assert response.status_code == 200
     assert "Welcome back, hooked_4.5!" in response.json["message"]
     assert "user" in response.json
 
