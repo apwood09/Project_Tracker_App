@@ -84,3 +84,22 @@ def test_logout_user(client):
 
     assert response.status_code == 200
     assert "Successfully unstitched from session" in response.json["message"]
+
+# delete user 
+# confirm destroy user entries successfully 
+def test_delete_user(): 
+    # seed user -> mock db 
+    user = User(username="hooked_4.5")
+    user.set_password("Stitches123456")
+    db.session.add(user)
+    db.session.commit()
+
+    # call dynamic delete route 
+    response = client.delete("/api/users/hooked_4.5")
+
+    assert response.status_code == 200
+    assert "Successfully unstiched" in response.json["message"]
+
+    # double check db empty 
+    delete_user = User.query.filter_by(username="hooked_4.5").first()
+    assert delete_user is None 
