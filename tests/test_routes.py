@@ -78,13 +78,13 @@ def test_logout_user(client):
     db.session.commit()
 
     # log in, establish session cookie in test client 
-    client.post("/api/login", json={"username": "hooked_4.5", "password": "Stitches123456"})
+    client.post("/login", json={"username": "hooked_4.5", "password": "Stitches123456"})
 
     # hit logout endpoint 
-    response = client.post("/api/logout")
+    response = client.post("/logout")
 
     assert response.status_code == 200
-    assert "Successfully unstitched from session" in response.json["message"]
+    assert " sucessfully unstitched from session" in response.json["message"]
 
 # delete user 
 # confirm destroy user entries successfully 
