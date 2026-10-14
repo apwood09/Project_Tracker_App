@@ -62,7 +62,7 @@ def test_login_user(client):
         "password": "Stitches123456"
     }
 
-    response = client.post("/api/login", json=payload)
+    response = client.post("/login", json=payload)
 
     assert response.status_code == 200
     assert "Welcome back, hooked_4.5!" in response.json["message"]
