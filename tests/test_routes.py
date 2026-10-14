@@ -41,7 +41,7 @@ def test_create_user(client):
         "password": "Stitches123456"
     }
 
-    response = client.post("/api/users", json=payload)
+    response = client.post("/users", json=payload)
 
     assert  response.status_code == 201
     assert  "id" in response.json
