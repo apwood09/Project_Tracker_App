@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block tiitle %}Log In &middot; Yarn Over Stitches{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>Welcome Back</h2>
+        <p class="auth-subtitle">Log In To TRack Stitches  and Projects</p>
+        <!-- Alert Banner-->
+        <div id="error-banner" class="alert alert-danger" style="display: none;"></div>
+
+        <form id="login-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" class="form-control" required placeholder="e.g., hooked_4.5">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-control" required placeholder="Enter Your Password">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Log In</button>
+        </form>
+    </div>
+</div>
+
+<!-- Hook UP login handling script-->
+ <script src="/static/js/auth.js"></script>
+ {% endblock %}
