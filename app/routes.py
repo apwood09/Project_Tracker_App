@@ -20,6 +20,10 @@ def about():
 def health():
     return jsonify(status="ok")
 
+@main_bp.route("/login", methods=["GET"])
+def login_page(): 
+    return render_template("login.html")
+    
 # Class User: GET 
 @main_bp.route("/users", methods=["GET"])
 def list_users(): 
