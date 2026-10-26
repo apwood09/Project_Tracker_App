@@ -129,3 +129,16 @@ def test_signup_missing_password_or_username(client):
 
     assert response.status_code == 400
     assert "error" in response.json
+
+# signup duplication
+# verify registering existing username return 400 error
+def test_signup_duplicate_username(client): 
+    payload = {
+        "username": "duplicate_user2"
+        "password": "HOOK1357"
+    }
+    # first registration 
+    client.post("/api/users", json=payload)
+
+    assert response.status_code == 400
+    assert "already stitched" in response.json["error"].lower() or "taken" in response.json["error"].lower()
