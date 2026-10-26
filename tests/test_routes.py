@@ -104,3 +104,19 @@ def test_delete_user(client):
     # double check db empty 
     delete_user = User.query.filter_by(username="hooked_4.5").first()
     assert delete_user is None
+
+# signup success 
+# verify new user can register: POST /api/users endpoint 
+def test_signup_success(client): 
+    payload = {
+        "username": "new_stitcher", 
+        "password": "Stitcher2468"
+    }
+    response = client.post("/api/users", json=payload)
+
+    assert response.status_code == 201
+    assert "id" in response.json
+    assert response.json["username"] == "new_stitcher"
+    # password_hash not accidentally exposed in repsonse
+    assert "password" not in response.json
+    assert "password_hash" not in response.json
