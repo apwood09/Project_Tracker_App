@@ -120,3 +120,12 @@ def test_signup_success(client):
     # password_hash not accidentally exposed in repsonse
     assert "password" not in response.json
     assert "password_hash" not in response.json
+
+# signup missing password or username 
+# verify registration fails (400) when required fields missing
+def test_signup_missing_password_or_username(client): 
+    payload = {"username": ""} # missing password & empty password
+    response = client.post("/api/users", json=payload)
+
+    assert response.status_code == 400
+    assert "error" in response.json
