@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block titile %}Sign Up &middot; Yarn Over Stitiches{% endblock %}
+
+{% block content %}
+<div>
+    <div class="auth-container">
+        <h2>Create an Account</h2>
+        <p class="auth-subtitle">Join us to start tracking your projects</p>
+
+        <!-- Error Alert Banner -->
+         <div id="error-banner" class="alert alert-danger" style="display: none;"></div>
+        <!-- Success Alert Banner -->
+         <div id="success-banner" class="alert alert-success" style="display: none;"></div>
+
+        <form id="register-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" class="form-control" required placeholder="Choose a unique username">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-control" required placeholder="Create a secure password">
+            </div>
+
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" name="confirm-password" class="form-control" required placeholder="Repeat your password">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+        </form>
+
+        <p class="auth-footer">Already have an account? <a href="{{ url_for('main.login_page') }}">Log in here</a></p>
+    </div>
+</div>
+
+<!-- Link to registration logic handler -->
+ <script src="/static/js/register.js"></script>
+ {% endblock %}
