@@ -23,6 +23,6 @@ def create_app(config_name="default"):
     
     # register blueprints
     from .routes import main_bp
-    app.register_blueprint(main_bp)
+    app.register_blueprint(main_bp, url_prefix='/api')
 
     return app 

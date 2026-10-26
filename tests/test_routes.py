@@ -1,14 +1,15 @@
 import pytest 
 from app  import create_app, db
-from app.routes import User
+from app.models import User
+from app.routes import main_bp
 
 @pytest.fixture
 def client(): 
     # isolated, clean in-memory db configuration for each test function
-    app = create_app("testing")
+    app = create_app()
     app.config.update({
         "TESTING": True, 
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory", 
+        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:", 
         "WTF_CSRF_ENABLED": False # disables from secruity: JSON API testing
     })
 
@@ -20,13 +21,13 @@ def client():
             db.drop_all()
 
 def test_index(client):
-    resp = client.get("/")
+    resp = client.get("/api/")
     assert resp.status_code == 200
     assert b"Yarn Over" in resp.data
 
 
 def test_health(client):
-    resp = client.get("/health")
+    resp = client.get("/api/health")
     assert resp.get_json() == {"status": "ok"}
 
 
@@ -41,7 +42,7 @@ def test_create_user(client):
         "password": "Stitches123456"
     }
 
-    response = client.post("/users", json=payload)
+    response = client.post("/api/users", json=payload)
 
     assert  response.status_code == 201
     assert  "id" in response.json
@@ -62,7 +63,7 @@ def test_login_user(client):
         "password": "Stitches123456"
     }
 
-    response = client.post("/login", json=payload)
+    response = client.post("/api/login", json=payload)
 
     assert response.status_code == 200
     assert "Welcome back, hooked_4.5!" in response.json["message"]
@@ -78,10 +79,10 @@ def test_logout_user(client):
     db.session.commit()
 
     # log in, establish session cookie in test client 
-    client.post("/login", json={"username": "hooked_4.5", "password": "Stitches123456"})
+    client.post("/api/login", json={"username": "hooked_4.5", "password": "Stitches123456"})
 
     # hit logout endpoint 
-    response = client.post("/logout")
+    response = client.post("/api/logout")
 
     assert response.status_code == 200
     assert " sucessfully unstitched from session" in response.json["message"]
@@ -96,7 +97,7 @@ def test_delete_user(client):
     db.session.commit()
 
     # call dynamic delete route 
-    response = client.delete("/users/hooked_4.5")
+    response = client.delete("/api/users/hooked_4.5")
 
     assert response.status_code == 200
     assert "succesfully unstitched" in response.json["message"]
@@ -134,11 +135,14 @@ def test_signup_missing_password_or_username(client):
 # verify registering existing username return 400 error
 def test_signup_duplicate_username(client): 
     payload = {
-        "username": "duplicate_user2"
+        "username": "duplicate_user2", 
         "password": "HOOK1357"
     }
-    # first registration 
+    # first registration (saves user sucessfully)
     client.post("/api/users", json=payload)
+
+    # second registration (fail & generate the error)
+    response = client.post("/api/users", json=payload)
 
     assert response.status_code == 400
     assert "already stitched" in response.json["error"].lower() or "taken" in response.json["error"].lower()
