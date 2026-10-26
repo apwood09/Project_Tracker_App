@@ -18,7 +18,7 @@
         <a href="#" id="nav-logout" class="nav-link-logout">Log Out</a>
       {% else %}
         <a href="{{ url_for('main.login_page') }}">Log In</a>
-        <a href="/register">Sign Up</a>
+        <a href="{{ url_for('main.register_page') }}">Sign Up</a>
       {% endif %}
     </nav>
   </header>
