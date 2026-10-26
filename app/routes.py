@@ -101,3 +101,9 @@ def logout():
     username = current_user.username
     logout_user() # clears session tokens and cookies completely 
     return jsonify({"message": f"User {username} sucessfully unstitched from session"}), 200
+
+# REGISTER page 
+# GET
+@main_bp.route("/register", methods=["GET"])
+def register_page(): 
+    return render_template("register.html")
