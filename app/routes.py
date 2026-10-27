@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, render_template, request
 from .extensions import db
-from .models import User
+from .models import User, Project
 from flask_login import login_user, logout_user, login_required, current_user
 
 main_bp = Blueprint("main", __name__)
@@ -107,3 +107,30 @@ def logout():
     username = current_user.username
     logout_user() # clears session tokens and cookies completely 
     return jsonify({"message": f"User {username} sucessfully unstitched from session"}), 200
+
+# Project CREATE (Authenticated User only)
+# Projects POST
+@main_bp.route("/projects", methods=["POST"])
+@login_required
+def create_project(): 
+    data = request.get_json(silent=True) or {}
+    name = (data.get("name") or "").strip()
+    description = data.get("description", "").strip()
+    status = data.get("status", "Planning").strip()
+
+    if not name: 
+        return jsonify({"error": "'name' is required to start a project"}), 400
+
+    # instantiate project bound directly to logged-in user
+    new_project = Project(
+        name=name, 
+        description=description, 
+        status=status, 
+        user_id=current_user.id 
+    )
+
+    db.session.add(new_project)
+    db.session.commit()
+
+    return jsonify(new_project.to_dict()), 201
+
