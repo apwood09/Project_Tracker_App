@@ -134,3 +134,11 @@ def create_project():
 
     return jsonify(new_project.to_dict()), 201
 
+# Current User's Project 
+# Projects GET
+@main_bp.route("/projects", methods=["GET"])
+@login_required
+def list_user_projects():
+    # ONLY fetches row matching current User logged-in 
+    projects = Project.query.filter_by(user_id=current_user.id).order_by(Project.created_at.desc()).all()
+    return = jsonify([p.to_dict() for p in projects]), 200
