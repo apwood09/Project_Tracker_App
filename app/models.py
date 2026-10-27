@@ -33,3 +33,32 @@ class User(UserMixin, db.Model):
     # visual represenataion -> object for debugging 
     def __repr__(self): 
         return f'<User {self.username}>'
+
+# class project 
+class Project(db.Model): 
+    __tablename__= 'projects'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    status = db.Column(db.String(50), default='Planning', nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    # securely link project specific user 
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+
+    # establish relationship: easier querying 
+    user = db.relationship('User', backref=db.backref('projects', lazy=True, cascade="all, delete-orphan"))
+
+    def to_dict(self): 
+        return {
+            "id": self.id, 
+            "name": self.name, 
+            "description": self.description, 
+            "status": self.status, 
+            "user_id": self.user_id, 
+            "created_at": self.created_at.isoformat()
+        }
+    
+    def __repr__(self): 
+        return f'<Project {self.name} by User {self.user_id}>'
